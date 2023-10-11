@@ -18,7 +18,11 @@ abstract public class DefaultLanguagePack implements LanguagePack {
 
     @Override
     public String get(String key) {
-        return languages.get(currentLanguageIndex).getKey(key);
+        try {
+            return languages.get(currentLanguageIndex).getKey(key);
+        } catch (Exception e) {
+        }
+        return "";
     }
 
     @Override

@@ -10,4 +10,17 @@ public class MarvinLanguagePack extends DefaultLanguagePack {
 
         setKey("color.red", "rot", "red");
     }
+
+    class GermanLanguage extends Language {
+        public GermanLanguage() {
+            super("Deutsch");
+        }
+    }
+
+    class EnglishLanguage extends Language {
+        public EnglishLanguage() {
+            super("English");
+        }
+    }
+
 }

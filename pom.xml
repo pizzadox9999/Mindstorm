@@ -3,6 +3,21 @@
   <groupId>Mindstorm</groupId>
   <artifactId>Mindstorm</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  <properties>
+    <tomcat.version>10.1.9</tomcat.version>
+  </properties>
+  <dependencies>
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-core</artifactId>
+            <version>${tomcat.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-jasper</artifactId>
+            <version>${tomcat.version}</version>
+        </dependency>
+  </dependencies>
   <build>
     <plugins>
       <plugin>

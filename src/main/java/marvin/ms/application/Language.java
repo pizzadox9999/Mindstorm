@@ -12,6 +12,8 @@ abstract public class Language {
     protected Language(String name) {
         this.name = name;
         id = languageCounter;
+        
+        keyMap = new HashMap<>(); 
     }
 
     public void setKey(String key, String value) {
