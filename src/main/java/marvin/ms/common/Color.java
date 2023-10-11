@@ -1,6 +1,7 @@
 package marvin.ms.common;
 
 import marvin.ms.application.LanguagePack;
+import marvin.ms.application.MarvinToolkit;
 
 /**
  * This is a simple color representation. This includes red green blue, but no

@@ -32,7 +32,7 @@ public class Marvin extends Application {
     }
 
     public static void main(String[] args) {
-        DefaultMarvinToolkit.initMarvinToolkit();
+        StandardMarvinToolkit.initMarvinToolkit();
         Marvin marvin = new Marvin("src/main/webapp/");
         marvin.start();
     }

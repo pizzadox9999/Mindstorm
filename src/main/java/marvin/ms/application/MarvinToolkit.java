@@ -1,6 +1,4 @@
-package marvin.ms.common;
-
-import marvin.ms.application.LanguagePack;
+package marvin.ms.application;
 
 public abstract class MarvinToolkit {
 

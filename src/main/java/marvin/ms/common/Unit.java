@@ -1,6 +1,7 @@
 package marvin.ms.common;
 
 import marvin.ms.application.LanguagePack;
+import marvin.ms.application.MarvinToolkit;
 
 /**
  * A simple unit representation which features a to string methods for later

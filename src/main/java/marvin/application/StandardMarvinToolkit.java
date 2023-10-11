@@ -1,17 +1,17 @@
 package marvin.application;
 
 import marvin.ms.application.LanguagePack;
-import marvin.ms.common.MarvinToolkit;
+import marvin.ms.application.MarvinToolkit;
 
-public class DefaultMarvinToolkit extends MarvinToolkit {
+public class StandardMarvinToolkit extends MarvinToolkit {
     
     public static void initMarvinToolkit() {
-        defaultMarvinToolkit = new DefaultMarvinToolkit();
+        defaultMarvinToolkit = new StandardMarvinToolkit();
     }
     
     private MarvinLanguagePack marvinLanguagePack;
     
-    private DefaultMarvinToolkit() {
+    private StandardMarvinToolkit() {
         marvinLanguagePack = new MarvinLanguagePack();
     }
     
