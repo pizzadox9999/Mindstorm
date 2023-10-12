@@ -1,5 +1,8 @@
 package marvin.ms.common;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import marvin.ms.application.LanguagePack;
 import marvin.ms.application.MarvinToolkit;
 
@@ -34,6 +37,18 @@ public class Color {
         this.name = name;
         id = unitCounter++;
     }
+    
+    public int getRed() {
+        return red;
+    }
+    
+    public int getGreen() {
+        return green;
+    }
+    
+    public int getBlue() {
+        return blue;
+    }
 
     public boolean equals(Color color) {
         return id == color.id;
@@ -49,5 +64,9 @@ public class Color {
         }
 
         return name + "(" + red + "|" + green + "|" + blue + ")";
+    }
+    
+    public static ArrayList<Color> createSupportList(Color... colors) {
+        return (ArrayList<Color>) Arrays.asList(colors);
     }
 }

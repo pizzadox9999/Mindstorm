@@ -66,7 +66,7 @@ public interface Canvas {
      * 
      * @return Returns the new subcanvas;
      */
-    public Canvas createSubCanvas();
+    public Canvas createSubCanvas(float x, float y, float width, float height);
 
     /**
      * This methods returns with how much pressure/force the print head pushes
@@ -91,7 +91,7 @@ public interface Canvas {
      * 
      * @return The available colors.
      */
-    public List<Color> getAvaiableColors();
+    public List<Color> getSupportedColors();
 
     /**
      * Sets the color the print head is currently using.
@@ -99,6 +99,8 @@ public interface Canvas {
      * @param color The color which should be used.
      */
     public void chooseColor(Color color);
+    
+    public Color getColor();
     
     /**
      * Draws the drawable to the canvas.
