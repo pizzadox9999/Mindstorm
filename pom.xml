@@ -4,7 +4,7 @@
   <artifactId>Mindstorm</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <properties>
-    <tomcat.version>10.1.9</tomcat.version>
+    <tomcat.version>10.1.14</tomcat.version>
   </properties>
   <dependencies>
         <dependency>
