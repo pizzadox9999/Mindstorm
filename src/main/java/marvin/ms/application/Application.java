@@ -1,6 +1,7 @@
 package marvin.ms.application;
 
 import jakarta.servlet.Servlet;
+import marvin.ms.common.test.Tests;
 
 abstract public class Application implements Runnable {
     private TomcatExecuter tomcatExecuter;
@@ -30,6 +31,12 @@ abstract public class Application implements Runnable {
     protected void shutudown() {};
 
     public void start() {
+        if(Tests.runTests) {
+            Tests.start();
+            if(Tests.runTestsExclusive) {
+                return;
+            }
+        }
         System.out.println("Application startup.");
         tomcatStart();
         startup();
