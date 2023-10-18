@@ -1,6 +1,6 @@
 package marvin.ms.application;
 
-import jakarta.servlet.Servlet;
+import javax.servlet.Servlet;
 import marvin.ms.common.test.Tests;
 
 abstract public class Application implements Runnable {
