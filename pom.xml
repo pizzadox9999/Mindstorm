@@ -3,9 +3,6 @@
   <groupId>Mindstorm</groupId>
   <artifactId>Mindstorm</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <properties>
-    <tomcat.version>7.0.0</tomcat.version>
-  </properties>
   <build>
     <plugins>
       <plugin>

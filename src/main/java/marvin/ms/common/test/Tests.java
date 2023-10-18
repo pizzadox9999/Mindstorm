@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 public class Tests implements Runnable {
     //test configuration
-    public static final boolean runTests = true;
-    public static final boolean runTestsExclusive = true;
+    public static final boolean runTests = false;
+    public static final boolean runTestsExclusive = false;
     
     private ArrayList<Testable> tests = new ArrayList<>();
     
