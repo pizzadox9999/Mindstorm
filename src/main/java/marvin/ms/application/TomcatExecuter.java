@@ -3,19 +3,14 @@ package marvin.ms.application;
 import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 
-import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
-import org.apache.catalina.Server;
-import org.apache.catalina.WebResourceRoot;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.startup.Tomcat;
-import org.apache.catalina.webresources.DirResourceSet;
-import org.apache.catalina.webresources.StandardRoot;
 
-import jakarta.servlet.Servlet;
-import jakarta.servlet.http.HttpServlet;
+
+import javax.servlet.Servlet;
+import javax.servlet.ServletException;
 
 public class TomcatExecuter implements Runnable {
     private ExecutorService executorService;
@@ -43,13 +38,17 @@ public class TomcatExecuter implements Runnable {
 
         tomcat.setPort(Integer.valueOf(webPort));
 
-        tomcatContext = (StandardContext) tomcat.addWebapp(
-                contextPath,
-                new File(webappDirLocation).getAbsolutePath()
-            );
+        try {
+			tomcatContext = (StandardContext) tomcat.addWebapp(
+			        contextPath,
+			        new File(webappDirLocation).getAbsolutePath()
+			    );
+		} catch (ServletException e) {
+			e.printStackTrace();
+		}
         
         // Servlet 3.0 annotation will work
-        File additionWebInfClasses = new File("target/classes");
+        /*File additionWebInfClasses = new File("target/classes");
         WebResourceRoot resources = new StandardRoot(tomcatContext);
         resources.addPreResources(
                 new DirResourceSet(
@@ -59,13 +58,14 @@ public class TomcatExecuter implements Runnable {
                         "/"
                 )
         );
-        tomcatContext.setResources(resources);
+        
+        tomcatContext.setResources(resources);*/
     }
     
     public void addServlet(String mapping, Servlet servlet) {
         String name = mapping.substring(mapping.lastIndexOf("/")).toUpperCase() + "_" + (tomcatServletCounter++);
         Tomcat.addServlet(tomcatContext, name, servlet);
-        tomcatContext.addServletMappingDecoded(mapping, name);
+        tomcatContext.addServletMapping(mapping, name);
     }
 
     @Override

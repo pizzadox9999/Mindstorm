@@ -3,6 +3,7 @@ package marvin.application;
 import java.util.Scanner;
 
 import marvin.ms.application.Application;
+import marvin.ms.application.MarvinToolkit;
 
 public class Marvin extends Application {
     private boolean run = true;
@@ -29,6 +30,10 @@ public class Marvin extends Application {
                 System.out.println("Your input was not recognized");
             }
         }
+    }
+    
+    private String getLanguageValue(String key) {
+        return MarvinToolkit.getDefaulToolkit().getLanguagePack().get(key);
     }
 
     public static void main(String[] args) {

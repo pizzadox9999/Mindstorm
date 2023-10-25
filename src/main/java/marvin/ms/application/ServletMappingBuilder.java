@@ -2,7 +2,7 @@ package marvin.ms.application;
 
 import java.util.ArrayList;
 
-import jakarta.servlet.Servlet;
+import javax.servlet.Servlet;
 
 public class ServletMappingBuilder {
     private ArrayList<String> mappings;
