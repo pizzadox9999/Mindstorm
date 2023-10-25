@@ -1,8 +1,6 @@
 package marvin.application;
 
-import java.util.Scanner;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.Arrays;
 
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.port.MotorPort;
@@ -11,16 +9,14 @@ import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3TouchSensor;
 import lejos.internal.ev3.EV3Battery;
 import lejos.robotics.RegulatedMotor;
-import marvin.ms.application.Application;
-import marvin.ms.application.MarvinToolkit;
 
-public class Marvin extends Application {
-	private boolean run = true;
-
+public class Marvin {
+	static EV3LargeRegulatedMotor motorPaperMove;
+	static EV3LargeRegulatedMotor motorPrintheadMove;
 	public static void test() {
     	System.out.println("test");
-    	final EV3LargeRegulatedMotor motorPaperMove = new EV3LargeRegulatedMotor(MotorPort.A);
-    	final EV3LargeRegulatedMotor motorPrintheadMove = new EV3LargeRegulatedMotor(MotorPort.B);
+    	motorPaperMove = new EV3LargeRegulatedMotor(MotorPort.A);
+    	motorPrintheadMove = new EV3LargeRegulatedMotor(MotorPort.B);
     	
     	final EV3TouchSensor sensorPrinthead = new EV3TouchSensor(SensorPort.S2);
     	final EV3ColorSensor sensorPaper = new EV3ColorSensor(SensorPort.S1);
@@ -78,53 +74,85 @@ public class Marvin extends Application {
 		    	motorPrintheadMove.stop();
 			}
 		};
-		ExecutorService executorService = Executors.newFixedThreadPool(2);
-		executorService.execute(getPaper);
-		executorService.execute(getPrinthead);
+		Thread thread1 = new Thread(getPaper);
+		Thread thread2 = new Thread(getPrinthead);
+		thread1.start();
+		thread2.start();
+		try {
+			thread1.join();
+			thread2.join();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
-		//move paper 
+		moveLine(100, 100, 200, 200);
+	}
+	
+	static float umfangGroßesRad = (float) ((43.2f) * Math.PI);
+	
+	static int speed = 1;
+	
+	public static void moveLine(float x1, float y1, float x2, float y2) {
+		startAndJoinThread(moveX(x1 - printHeadX, speed, -1), moveY(y1 - printHeadY, speed, -1));
 		
-		float umfangGroßesRad = 4.32f;
-
-		int papier1cmProGrad = (int) (360 * (1/umfangGroßesRad)) * 3;		
-    }
-
-	public static void move(final int distance, final int mmSec, final RegulatedMotor motor) {
+		int dirX = -1;
+		int dirY = -1;
+		if(x2 - x1 > 0) dirX = 1;
+		if(y2 - y1 > 0) dirY = 1;
+		
+		moveX(x2, speed, dirX).start();;
+		moveY(y2, speed, dirY).start();;
+		
+	}
+	
+	public static void startAndJoinThread(Thread... threads) {
+		for(Thread t : threads) {
+			t.start();
+		}
+		for(Thread t : threads) {
+			try {
+				t.join();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	static float printHeadX = 0;
+	static float printHeadY = 0;
+	
+	public static Thread moveX(final float distanceInMM, final int mmPerSec, int dir) {
+		printHeadX = distanceInMM;
+		return move(Math.round(distanceInMM), mmPerSec, motorPrintheadMove, dir);
+	}
+	
+	public static Thread moveY(final float distanceInMM, final int mmPerSec, int dir) {
+		printHeadY = distanceInMM;
+		return move(Math.round(distanceInMM), mmPerSec, motorPaperMove, dir);
+	}
+	
+	public static Thread move(final int distanceInMM, final int mmPerSec, final RegulatedMotor motor) {
+		return move(distanceInMM, mmPerSec, motor, -1);
+	}
+	
+	public static Thread move(final int distanceInMM, final int mmPerSec, final RegulatedMotor motor, final int dir) {
 		// v = t/s
 		// s = t/v
 		Thread thread = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				long time = distance / mmSec;
-				motor.setSpeed(250);
-				motor.forward();
-				try {
-					Thread.sleep(time);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				System.out.println("umfangGroßesRad: " + umfangGroßesRad);
+				float angle = distanceInMM / umfangGroßesRad * 3 * 360;
+				float speed = angle / (distanceInMM / mmPerSec);
+				System.out.println("angle: " + angle);
+				System.out.println("speed: " + speed);
+				motor.setSpeed(Math.round(speed));
+				motor.rotate(Math.round(angle) * dir);
 			}
 		});
-		thread.start();
+		return thread;
 	}
-
-	public void run() {
-		Scanner scanner = new Scanner(System.in);
-		while (run) {
-			System.out.println("Console: ");
-			String nextLine = scanner.nextLine().toLowerCase();
-			if (nextLine.equals("stop")) {
-				run = false;
-			} else {
-				System.out.println("Your input was not recognized");
-			}
-		}
-	}
-
-	private String getLanguageValue(String key) {
-		return MarvinToolkit.getDefaulToolkit().getLanguagePack().get(key);
-	}
-
+	
 	public static void main(String[] args) {
 		test();
 	}
