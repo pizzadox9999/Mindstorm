@@ -97,7 +97,6 @@ public class PrintModule implements Movable, Device, Finishable, Printhead {
     public void finish() {
         print(false);
         moveTo(size);
-        System.out.println("printModule finish position: " + position);
     }
 
     @Override

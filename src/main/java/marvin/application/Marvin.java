@@ -7,7 +7,7 @@ import marvin.le.BezierCurveEditor;
 
 public class Marvin {
     
-    private static double bezierSegmentLength = 0.009;
+    private static double bezierSegmentLength = 0.01;
     
 	static void waitFor(long millis) {
 	    try {

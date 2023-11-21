@@ -24,6 +24,10 @@ public class Printer implements Finishable {
         printModule.finish();
     }
     
+    public void drawBezier() {
+        
+    }
+    
     /**
      * input parameter as millimeter
      * @param startX
