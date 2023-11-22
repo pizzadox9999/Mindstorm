@@ -40,16 +40,21 @@ public class PaperModule implements Movable, Device, Finishable {
     public void moveTo(double position) {
         moveTo(position, paperMotor.getMaxSpeed());
     }
+    
+    public void rotateWithoutHold(boolean rotateWithouthold) {
+    	this.rotateWithoutHold = rotateWithouthold;
+    }
 
     /**
      * @param position takes the position as mm
      */
     @Override
     public void moveTo(double position, double velocity) {
-        if (position > size)
+    	if (position > size)
             position = size;
         if (position < 0)
             position = 0;
+        
         double wantedPosition = position;
         double currentPosition = this.position;
         double newPosition = wantedPosition - currentPosition;
@@ -60,8 +65,16 @@ public class PaperModule implements Movable, Device, Finishable {
         } else {
             paperMotor.rotate((int) Math.round(convertMMToDegree(newPosition)), false);
         }
-
-        // apply position after move
+        
+        this.position = position;
+    }
+    
+    public void movePosition(double position) {
+    	if (position > size)
+            position = size;
+        if (position < 0)
+            position = 0;
+        
         this.position = position;
     }
 

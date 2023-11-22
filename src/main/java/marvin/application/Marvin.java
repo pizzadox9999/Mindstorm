@@ -34,13 +34,22 @@ public class Marvin {
     }
 	
 	public static void main(String[] args) {
-	    
+	    //draw circle
+		Printer printer = new Printer();
+		printer.moveToPosition(150, 50);
+		waitFor(3000);
+		printer.drawCircle(90);
+		waitFor(3000);
+		printer.finish();
+		
+		
+		System.exit(0);
 	    ArrayList<Point2D.Double> points = new ArrayList<>();
 	    points.add(new Point2D.Double(10, 100));
 	    points.add(new Point2D.Double(50, 50));
 	    points.add(new Point2D.Double(80, 100));
 	    
-	    Printer printer = new Printer();
+	    printer = new Printer();
 		
 	    drawBezier(points, bezierSegmentLength, printer);
 		

@@ -3,6 +3,7 @@
 	<classpathentry kind="con" path="org.lejos.ev3.ldt.LEJOS_EV3_LIBRARY_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
 		<attributes>
+			<attribute name="module" value="true"/>
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
@@ -35,11 +36,6 @@
 			<attribute name="test" value="true"/>
 			<attribute name="maven.pomderived" value="true"/>
 			<attribute name="optional" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/home/Documents/JavaLib&apos;s&amp;doc&apos;s/JSFML/api/jsfml.jar" sourcepath="C:/Users/home/Documents/JavaLib&apos;s&amp;doc&apos;s/JSFML/src/org">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/C:/Users/home/Documents/JavaLib&apos;s&amp;doc&apos;s/JSFML/docs/javadoc/"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="output" path="target/classes"/>

@@ -38,12 +38,14 @@ public class PrintModule implements Movable, Device, Finishable, Printhead {
      */
     @Override
     public void moveTo(double position, double velocity) {
-        if (position > size)
+    	if (position > size)
             position = size;
         if (position < 0)
             position = 0;
-        double wantedPosition = position;
-        double currentPosition = this.position;
+    	
+    	
+    	double wantedPosition = position;
+    	double currentPosition = this.position;
         double newPosition = wantedPosition - currentPosition;
 
         printMotor.setSpeed((float) velocity);
@@ -52,9 +54,21 @@ public class PrintModule implements Movable, Device, Finishable, Printhead {
         } else {
             printMotor.rotate(- Math.round(Math.round(convertMMToDegree(newPosition))), false);
         }
-
-        // apply position after move
+        
         this.position = position;
+    }
+    
+    public void movePosition(double position) {
+    	if (position > size)
+            position = size;
+        if (position < 0)
+            position = 0;
+        
+        this.position = position;
+    }
+    
+    public void rotateWithoutHold(boolean rotateWithouthold) {
+    	this.rotateWithoutHold = rotateWithouthold;
     }
 
     @Override

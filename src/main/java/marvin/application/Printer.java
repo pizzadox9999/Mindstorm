@@ -13,6 +13,11 @@ public class Printer implements Finishable {
         printModule.setup();
     }
     
+    public void rotateWithoutHold(boolean rotateWithouthold) {
+    	printModule.rotateWithoutHold(rotateWithouthold);
+    	paperModule.rotateWithoutHold(rotateWithouthold);
+    }
+    
     public void moveToPosition(double x, double y) {
         printModule.moveTo(x);
         paperModule.moveTo(y);
@@ -26,6 +31,52 @@ public class Printer implements Finishable {
     
     public void drawBezier() {
         
+    }
+    
+    public void drawCircle(double radius) {
+    	printModule.print(true);
+    	Engine printMotor = printModule.getEngines()[0];
+        Engine paperMotor = paperModule.getEngines()[0];
+        
+        //first eighth
+        double distanceEighth = (2 * radius * 3.14d) / 8;
+        
+        double Vx = printMotor.getMaxSpeed();
+        double VxTime = printModule.convertMMToDegree(distanceEighth) / Vx;
+        
+        double accelerationY = paperMotor.getMaxSpeed() / VxTime;
+        
+        
+        printMotor.setSpeed(Math.round(Math.round(Vx)));
+        paperMotor.setAcceleration(Math.round(Math.round(accelerationY)));
+        paperMotor.setSpeed(paperMotor.getMaxSpeed());
+        
+        printMotor.forward();
+        paperMotor.forward();
+        
+        try {
+			Thread.sleep((long) (VxTime * 1000));
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+        
+        double Vy = paperMotor.getMaxSpeed();
+        double VyTime = paperModule.convertMMToDegree(distanceEighth) / Vy;
+        
+        double accelerationX = printMotor.getMaxSpeed() / VyTime * (-1);
+        
+        printMotor.setAcceleration(Math.round(Math.round(accelerationX)));
+        
+        try {
+			Thread.sleep((long) (VyTime * 1000));
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+        
+        printMotor.stop();
+        paperMotor.stop();
+        
+        printModule.print(false);
     }
     
     /**
