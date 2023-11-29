@@ -1,5 +1,8 @@
 package marvin.application;
 
+import lejos.robotics.chassis.WheeledChassis;
+import lejos.robotics.navigation.MovePilot;
+
 public class Printer implements Finishable {
     private PaperModule paperModule;
     private PrintModule printModule;
@@ -50,13 +53,29 @@ public class Printer implements Finishable {
      * @param radius in mm
      */
     public void drawCircle(double radius) {
+    	Engine printMotor = printModule.getEngines()[0];
+        Engine paperMotor = paperModule.getEngines()[0];
+        
+        
+    	paperModule.moveTo(radius * 2, paperMotor.getMaxSpeed()/2);
+    	
+    	
+    	printMotor.forward();
+    	printMotor.flt();
+    	
+    	printMotor.setAcceleration(100);
+    	printModule.moveTo(radius, printMotor.getMaxSpeed());
+    	
+    	
+    	
+    	
+    	
         int segment = 1;
         //moveToPosition(printModule.getPosition(), paperModule.getPosition() + radius);
 
         printModule.print(true);
 
-        Engine printMotor = printModule.getEngines()[0];
-        Engine paperMotor = paperModule.getEngines()[0];
+        
         
         double segmentLength = (2 * Math.PI * radius) / 8;
         
@@ -158,6 +177,9 @@ public class Printer implements Finishable {
 
         Engine printMotor = printModule.getEngines()[0];
         Engine paperMotor = paperModule.getEngines()[0];
+        
+        printMotor.setAcceleration(450);
+        paperMotor.setAcceleration(450);
 
         // determine the motor with the biggest distance to the target
         // this motor should use the max speed available the other
@@ -189,7 +211,7 @@ public class Printer implements Finishable {
             shortDistancePosition = endY;
         }
 
-        float engineLongDinstanceSpeed = engineLongDistance.getMaxSpeed();
+        float engineLongDinstanceSpeed = engineLongDistance.getMaxSpeed() / 8;
         double engineLongDinstanceTime = deviceLongDistance.convertMMToDegree(longDistance) / engineLongDinstanceSpeed;
 
         // calculate the speed of the engine with the short distance
@@ -206,5 +228,9 @@ public class Printer implements Finishable {
 
         printMotor.waitComplete();
         paperMotor.waitComplete();
+    }
+    
+    public void drawCircleVer1() {
+    	MovePilot movePilot = new MovePilot(null);
     }
 }

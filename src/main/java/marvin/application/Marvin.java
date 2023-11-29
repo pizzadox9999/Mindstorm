@@ -7,7 +7,7 @@ import marvin.le.BezierCurveEditor;
 
 public class Marvin {
     
-    private static double bezierSegmentLength = 0.01;
+    private static double bezierSegmentLength = 0.004;
     
 	public static void waitFor(long millis) {
 	    try {
@@ -39,8 +39,9 @@ public class Marvin {
 	
 	public static void main(String[] args) {
 	    //draw circle
-		Printer printer = new Printer();
-		printer.moveToPosition(100, 100);
+		
+		/*Printer printer = new Printer();
+	printer.moveToPosition(100, 100);
 		waitFor(1000);
 		printer.drawCircle(20);
 		//printer.drawCircle(20, 2);
@@ -48,14 +49,18 @@ public class Marvin {
 		waitFor(1000);
 		printer.finish();
 		
-		
-		System.exit(0);
+		*/
+		//System.exit(0);
 	    ArrayList<Point2D.Double> points = new ArrayList<>();
-	    points.add(new Point2D.Double(10, 100));
-	    points.add(new Point2D.Double(50, 50));
-	    points.add(new Point2D.Double(80, 100));
+	    points.add(new Point2D.Double(120, 30));
+	    points.add(new Point2D.Double(75, 120));
+	    points.add(new Point2D.Double(30, 30));
 	    
-	    printer = new Printer();
+	    Printer printer = new Printer();
+	    
+	    printer.moveToPosition(100, 100);
+	    
+	    
 		
 	    drawBezier(points, bezierSegmentLength, printer);
 		
