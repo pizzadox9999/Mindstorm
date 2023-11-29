@@ -27,6 +27,15 @@ public class Engine extends BaseRegulatedMotor {
             float holdP, float holdI, float holdD, int offset, int maxSpeed) {
         super(port, regulator, typ, moveP, moveI, moveD, holdP, holdI, holdD, offset, maxSpeed);
     }
+    
+    public Thread createEngineAction(final EngineAction engineAction) {
+        return new Thread(new Runnable() {
+            @Override
+            public void run() {
+                engineAction.doAction(Engine.this);
+            }
+        });
+    }
 
     public void addSynchrozizedEngine(Engine engine) {
         engines.add(engine);

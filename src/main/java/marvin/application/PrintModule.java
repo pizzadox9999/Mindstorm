@@ -1,10 +1,12 @@
 package marvin.application;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
+
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3TouchSensor;
-import lejos.robotics.RegulatedMotor;
-import lejos.robotics.RegulatedMotorListener;
 
 public class PrintModule implements Movable, Device, Finishable, Printhead {
     private LargeEngine printMotor;
@@ -20,12 +22,55 @@ public class PrintModule implements Movable, Device, Finishable, Printhead {
     private double size = 0;
     private double position = 0;
     private boolean rotateWithoutHold = true;
-
+    
+    private Queue<Sequence> sequences = new LinkedList<>();
+    
     public PrintModule() {
         printMotor = new LargeEngine(MotorPort.C);
         pencilMotor = new MediumEngine(MotorPort.A);
         engines = new Engine[] { printMotor, pencilMotor };
         touchSensor = new EV3TouchSensor(SensorPort.S2);
+    }
+    
+    public void calibrate() {
+        float originalSpeed = printMotor.getSpeed();
+        
+        float speed = printMotor.getMaxSpeed();
+        printMotor.setSpeed(speed);
+
+        printMotor.forward();
+        touchSensor.setCurrentMode(0);
+        
+        float[] oneSample = new float[1];
+        touchSensor.getTouchMode().fetchSample(oneSample, 0);
+        while (oneSample[0] == 0) {
+            try {
+                Thread.sleep(10);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            touchSensor.getTouchMode().fetchSample(oneSample, 0);
+        }        
+        printMotor.stop();
+        
+        printMotor.setSpeed(originalSpeed);
+        double originalPosition = position;
+        position = 0;
+        moveTo(originalPosition);
+    }
+    
+    public void addSequence(Sequence sequence) {
+        sequences.offer(sequence);
+    }
+    
+    public Thread createMoveSequence() {
+        Thread moveThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                sequences.poll().sequence();
+            }
+        });
+        return moveThread;
     }
 
     @Override
@@ -57,6 +102,40 @@ public class PrintModule implements Movable, Device, Finishable, Printhead {
         
         this.position = position;
     }
+    
+    /*public Thread move(double position, final double velocity) {
+        if (position > size)
+            position = size;
+        if (position < 0)
+            position = 0;
+        
+        double wantedPosition = position;
+        double currentPosition = this.position;
+        final double distance = wantedPosition - currentPosition;
+        
+        PaperModule.this.position = PaperModule.this.position + distance;
+        final double time = distance / velocity;
+        
+        Thread moveThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                
+                paperMotor.setSpeed((float) velocity);
+                
+                if(distance > 0) {
+                    paperMotor.forward();
+                } if(distance < 0) {
+                    paperMotor.backward();
+                }
+                
+                try {
+                    Thread.sleep((long) (time * 1000));
+                } catch (Exception e) {
+                }
+            }
+        });     
+        return moveThread;
+    }*/
     
     public void movePosition(double position) {
     	if (position > size)
@@ -110,6 +189,7 @@ public class PrintModule implements Movable, Device, Finishable, Printhead {
     @Override
     public void finish() {
         print(false);
+        calibrate();
         moveTo(size);
     }
 

@@ -9,10 +9,14 @@ public class Marvin {
     
     private static double bezierSegmentLength = 0.01;
     
-	static void waitFor(long millis) {
+	public static void waitFor(long millis) {
 	    try {
-            Thread.sleep(millis);
+            Thread.sleep(Math.abs(millis));
         } catch (Exception e) {}
+	}
+	
+	public static void waitFor(double seconds) {
+	    waitFor(((long) seconds * 1000));
 	}
 	
 	public static void drawBezier(ArrayList<Point2D.Double> points, double segmentLength, Printer printer) {
@@ -36,10 +40,12 @@ public class Marvin {
 	public static void main(String[] args) {
 	    //draw circle
 		Printer printer = new Printer();
-		printer.moveToPosition(150, 50);
-		waitFor(3000);
-		printer.drawCircle(90);
-		waitFor(3000);
+		printer.moveToPosition(100, 100);
+		waitFor(1000);
+		printer.drawCircle(20);
+		//printer.drawCircle(20, 2);
+		//printer.drawCircle(20, 3);
+		waitFor(1000);
 		printer.finish();
 		
 		
