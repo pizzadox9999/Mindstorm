@@ -12,6 +12,9 @@ public class PaperModule implements Movable, Device, Finishable {
     private double wheelDiameter = 43.2f;
     private double wheelCircumference = 2 * 3.14f * (wheelDiameter / 2);
     private double gearRatio = 36 / 12;
+    
+    private int standardAcceleration;
+    private float standardSpeed;
 
     /**
      * paper size in mm
@@ -24,13 +27,15 @@ public class PaperModule implements Movable, Device, Finishable {
     private double position = 0;
 
     private boolean isPaperEjected = false;
-    private boolean rotateWithoutHold = true;
 
     public PaperModule() {
         paperMotor = new LargeEngine(MotorPort.B);
         paperSensor = new EV3ColorSensor(SensorPort.S1);
 
         engines = new Engine[] { paperMotor };
+        
+        standardAcceleration = paperMotor.getAcceleration();
+        standardSpeed = paperMotor.getSpeed();
     }
 
     /**
@@ -40,77 +45,61 @@ public class PaperModule implements Movable, Device, Finishable {
     public void moveTo(double position) {
         moveTo(position, paperMotor.getMaxSpeed());
     }
-    
-    public void rotateWithoutHold(boolean rotateWithouthold) {
-    	this.rotateWithoutHold = rotateWithouthold;
-    }
+
     public void moveTo(double position, double velocity) {
-    	moveTo(position, velocity, false);
+        moveTo(position, velocity, false);
+    }
+
+    public void moveTo(double position, double velocity, boolean returnImediate) {
+        moveTo(position, velocity, paperMotor.getAcceleration(), returnImediate);
     }
 
     /**
-     * @param position takes the position as mm
+     * Moves the paper module to the specified position.
+     * @param position Takes the position in millimeter.
      */
     @Override
-    public void moveTo(double position, double velocity, boolean returnImediate) {
-    	if (position > size)
-            position = size;
-        if (position < 0)
-            position = 0;
-        
+    public void moveTo(double position, double velocity, double acceleration, boolean returnImediate) {
         double wantedPosition = position;
         double currentPosition = this.position;
-        double newPosition = wantedPosition - currentPosition;
-
-        paperMotor.setSpeed((float) velocity);
-        if (rotateWithoutHold) {
-            paperMotor.rotateWithoutHold((int) Math.round(convertMMToDegree(newPosition)), returnImediate);
-        } else {
-            paperMotor.rotate((int) Math.round(convertMMToDegree(newPosition)), returnImediate);
-        }
-        
-        this.position = position;
+        double distance = wantedPosition - currentPosition;
+        move(distance, velocity, acceleration, returnImediate);
     }
     
-    /*public Thread move(double position, final double velocity) {
-        if (position > size)
-            position = size;
-        if (position < 0)
-            position = 0;
-        
-        double wantedPosition = position;
-        double currentPosition = this.position;
-        final double distance = wantedPosition - currentPosition;
-        
-        Thread moveThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                PaperModule.this.position = PaperModule.this.position + distance;
-                final double time = distance / velocity;
-                paperMotor.setSpeed((float) velocity);
-                
-                if(distance > 0) {
-                    paperMotor.forward();
-                } if(distance < 0) {
-                    paperMotor.backward();
-                }
-                
-                try {
-                    Thread.sleep((long) (time * 1000));
-                } catch (Exception e) {
-                }
-            }
-        });     
-        return moveThread;
-    }*/
+    public void moveMM(double distance, double velocity, double acceleration, boolean returnImediate) {
+        move(distance, convertMMToDegree(velocity), convertMMToDegree(acceleration), returnImediate);
+    }
     
-    public void movePosition(double position) {
-    	if (position > size)
-            position = size;
-        if (position < 0)
-            position = 0;
+    public void move(double distance, double velocity, double acceleration, boolean returnImediate) {
+        paperMotor.setAcceleration(Math.round(Math.round(acceleration)));
+        paperMotor.setSpeed(Math.round(velocity));
+        move(distance, returnImediate);
+    }
+    
+    /**
+     * Moves the paper module about this distance.
+     * @param distance In millimeter. 
+     * @param returnImediate
+     */
+    public void move(double distance, boolean returnImediate) {
+        double newPosition = position + distance;
+        if (newPosition > size) {
+            distance = size - position;
+            System.out.println("Distance to big.");
+        } else if (newPosition < 0) {
+            distance = 0;
+            System.out.println("Distance to small.");
+        }
         
-        this.position = position;
+        int degrees = Math.round(Math.round(convertMMToDegree(distance)));
+        if(1 > degrees && degrees > 0) {
+            System.out.println("Degrees between 1 and 0.");
+            degrees = 1;
+        }
+        
+        paperMotor.rotate(degrees, returnImediate);
+
+        this.position = newPosition;
     }
 
     @Override
@@ -193,7 +182,6 @@ public class PaperModule implements Movable, Device, Finishable {
 
     @Override
     public double convertMMToDegree(double milliMeter) {
-
         return (milliMeter * gearRatio * 360) / wheelCircumference;
     }
 
@@ -213,6 +201,18 @@ public class PaperModule implements Movable, Device, Finishable {
         }
 
         isPaperEjected = true;
+    }
+    
+    public void setMaxSpeed() {
+        paperMotor.setSpeed(paperMotor.getMaxSpeed());
+    }
+    
+    public void resetSpeed() {
+        paperMotor.setSpeed(standardSpeed);
+    }
+    
+    public void resetAcceleration() {
+        paperMotor.setAcceleration(standardAcceleration);
     }
 
     @Override

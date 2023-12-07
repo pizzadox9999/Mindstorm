@@ -2,7 +2,11 @@ package marvin.application;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Iterator;
 
+import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import lejos.hardware.port.MotorPort;
+import marvin.application.geom.Rectangle;
 import marvin.le.BezierCurveEditor;
 
 public class Marvin {
@@ -38,25 +42,65 @@ public class Marvin {
     }
 	
 	public static void main(String[] args) {
+	    //Acceleration and deceleration test
+	    /*EV3LargeRegulatedMotor paperEngine = new EV3LargeRegulatedMotor(MotorPort.B);
+	    
+	    paperEngine.setSpeed(paperEngine.getSpeed());
+	    
+	    paperEngine.forward();
+	    
+	    System.out.println("first wait start");
+	    waitFor(2d);
+	    System.out.println("first wait end");
+	    
+	    
+	    paperEngine.setAcceleration(10);
+	    paperEngine.setSpeed(0);
+	    
+	    
+	    System.out.println("second wait start");
+	    waitFor(5d);
+	    System.out.println("second wait end");
+	    
+	    paperEngine.stop();
+	    System.out.println("motor should have stopped");
+	    
+	    System.exit(0);
+	    */
 	    //draw circle
 		
-		/*Printer printer = new Printer();
-	printer.moveToPosition(100, 100);
+		Printer printer = new Printer();
+		
+		//printer.drawLine(10, 57, 150, 77);
+		//printer.drawLine(300, 70, 150, 70);
+		Rectangle rectangle = new Rectangle(80, 10, 40, 40);
+		rectangle.draw(printer);
+		rectangle = new Rectangle(80, 60, 45, 45);
+		rectangle.draw(printer);
+		printer.finish();
+		
+		System.exit(0);
+		
+		printer.moveToPosition(100, 100);
+		
 		waitFor(1000);
+		
 		printer.drawCircle(20);
 		//printer.drawCircle(20, 2);
 		//printer.drawCircle(20, 3);
+		
 		waitFor(1000);
+		
 		printer.finish();
 		
-		*/
-		//System.exit(0);
+		
+		System.exit(0);
 	    ArrayList<Point2D.Double> points = new ArrayList<>();
 	    points.add(new Point2D.Double(120, 30));
 	    points.add(new Point2D.Double(75, 120));
 	    points.add(new Point2D.Double(30, 30));
 	    
-	    Printer printer = new Printer();
+	    printer = new Printer();
 	    
 	    printer.moveToPosition(100, 100);
 	    

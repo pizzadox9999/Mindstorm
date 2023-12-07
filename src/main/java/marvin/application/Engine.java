@@ -37,7 +37,7 @@ public class Engine extends BaseRegulatedMotor {
         });
     }
 
-    public void addSynchrozizedEngine(Engine engine) {
+    public void addSynchronizedEngine(Engine engine) {
         engines.add(engine);
     }
 
@@ -56,6 +56,11 @@ public class Engine extends BaseRegulatedMotor {
     
     public void rotateToWithoutHold(int limitAngle, boolean immediateReturn) {
         reg.newMove(speed, acceleration, limitAngle, false, !immediateReturn);
+    }
+    
+    public void stop(boolean waitComplete)
+    {
+        reg.newMove(0, acceleration, NO_LIMIT, true, waitComplete);
     }
 
 }

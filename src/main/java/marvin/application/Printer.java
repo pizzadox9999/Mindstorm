@@ -1,7 +1,10 @@
 package marvin.application;
 
-import lejos.robotics.chassis.WheeledChassis;
+import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import lejos.robotics.RegulatedMotor;
+import lejos.robotics.RegulatedMotorListener;
 import lejos.robotics.navigation.MovePilot;
+import lejos.utility.Delay;
 
 public class Printer implements Finishable {
     private PaperModule paperModule;
@@ -14,11 +17,6 @@ public class Printer implements Finishable {
         printModule = new PrintModule();
         paperModule.setup();
         printModule.setup();
-    }
-
-    public void rotateWithoutHold(boolean rotateWithouthold) {
-        printModule.rotateWithoutHold(rotateWithouthold);
-        paperModule.rotateWithoutHold(rotateWithouthold);
     }
 
     public void moveToPosition(double x, double y) {
@@ -36,7 +34,11 @@ public class Printer implements Finishable {
 
     }
 
-    public double[] calcPointOnCircle(double radius, double angle) {
+    public static double[] calcPointOnCircle(double radius, double angle) {
+        return calcPointOnCircle(radius, angle, new double[] { 0, 0 });
+    }
+
+    public static double[] calcPointOnCircle(double radius, double angle, double[] offset) {
         double x = radius * Math.sin(Math.PI * 2 * angle / 360);
         double y = radius * Math.cos(Math.PI * 2 * angle / 360);
 
@@ -45,86 +47,58 @@ public class Printer implements Finishable {
         if (Math.abs(y) == 1)
             x = 0;
 
-        return new double[] { x + printModule.getPosition(), y + paperModule.getPosition() };
+        return new double[] { x + offset[0], y + offset[1] };
     }
-    
+
     /**
      * 
      * @param radius in mm
      */
     public void drawCircle(double radius) {
-    	Engine printMotor = printModule.getEngines()[0];
-        Engine paperMotor = paperModule.getEngines()[0];
-        
-        
-    	paperModule.moveTo(radius * 2, paperMotor.getMaxSpeed()/2);
-    	
-    	
-    	printMotor.forward();
-    	printMotor.flt();
-    	
-    	printMotor.setAcceleration(100);
-    	printModule.moveTo(radius, printMotor.getMaxSpeed());
-    	
-    	
-    	
-    	
-    	
-        int segment = 1;
-        //moveToPosition(printModule.getPosition(), paperModule.getPosition() + radius);
-
         printModule.print(true);
 
-        
-        
-        double segmentLength = (2 * Math.PI * radius) / 8;
-        
-        // first eighth
-        double[] position = calcPointOnCircle(radius, 45 * segment);
-        
-        //velocity in deg per second
-        final float velocityPrintMotor = printMotor.getMaxSpeed() / 2;
+        Engine printMotor = printModule.getEngines()[0];
+        Engine paperMotor = paperModule.getEngines()[0];
 
-        final double timePrintMotor = printModule.convertMMToDegree(position[0] - printMotor.getPosition()) / velocityPrintMotor;
+        float printSpeed = printMotor.getMaxSpeed() / 5, xSpeed = printSpeed;
         
-        final double velocityPaperMotor = paperModule.convertMMToDegree(position[1] - paperMotor.getPosition()) / timePrintMotor;
-        final double accelerationPaperMotor = velocityPaperMotor / timePrintMotor;
+        long printTime = Math.round(printModule.convertMMToDegree(radius) / printSpeed * 1000);
         
-        System.out.println(
-                "currentX: " + printModule.getPosition() + " currentY: " + paperModule.getPosition()
-                + "\npositionX: " + position[0] + " positionY: " + position[1]
-                + "\nvelocityPrintMotor: " + velocityPrintMotor + " accelerationPrintMotor: " + printMotor.getAcceleration() + " timePrintMotor: " + timePrintMotor
-                + "\nvelocityPaperMotor: " + velocityPaperMotor + " accelerationPaperMotor: " + accelerationPaperMotor       + " timePaperMotor: " + ((paperModule.convertMMToDegree(paperMotor.getPosition() - position[1]) / velocityPaperMotor)));
+        printModule.move(radius, xSpeed, 6000, true);
         
-        startAndWait(printMotor.createEngineAction(new EngineAction() {
-            @Override
-            public void doAction(Engine engineInAction) {
-                System.out.println("action 1 started");
-                engineInAction.setSpeed(velocityPrintMotor);
-                
-                engineInAction.forward();
-                
-                Marvin.waitFor(timePrintMotor);
-                engineInAction.stop();
-                
-                System.out.println("action 1 ended");
-            }
-        }), paperMotor.createEngineAction(new EngineAction() {
-            @Override
-            public void doAction(Engine engineInAction) {
-                System.out.println("action 2 started");
-                engineInAction.setSpeed(Math.round(velocityPaperMotor));
-                engineInAction.setAcceleration(Math.round(Math.round(accelerationPaperMotor)));
-                
-                engineInAction.forward();
-                
-                Marvin.waitFor(timePrintMotor);
-                engineInAction.stop();
-                System.out.println("action 2 ended");
-            }
-        }));
+        paperMotor.setAcceleration(6000);
+        paperMotor.setSpeed(0);
+        paperMotor.forward();
+        
+        long startTime = System.currentTimeMillis();
+        long endTime = startTime + printTime;
+        
+        double currentYPosition = radius;
+        
+        while (System.currentTimeMillis() < endTime){
+            long elapsedTime = System.currentTimeMillis() - startTime;
+            double elapsedTimeInSeconds = elapsedTime / 1000;
+            
+            double xPosition = paperModule.convertDegreeToMM(xSpeed * elapsedTimeInSeconds );
+            
+            double omega = Math.acos(xPosition / radius);
+            double yPosition = radius * Math.sin(omega);
+            
+            double yDistance = currentYPosition - yPosition;
+            currentYPosition = currentYPosition - yDistance;
+            double ySpeed = paperModule.convertMMToDegree(yDistance)  / elapsedTimeInSeconds;
+            
+            paperMotor.setSpeed(Math.round(ySpeed));
+            paperMotor.forward();
+        }
+        
+        paperMotor.stop();
+        
 
         printModule.print(false);
+
+        resetAcceleration();
+        resetSpeed();
     }
 
     private static void startAndWait(Thread... threads) {
@@ -154,6 +128,8 @@ public class Printer implements Finishable {
         startLineSegment();
         drawLineSegment(startX, startY, endX, endY);
         endLineSegment();
+        resetAcceleration();
+        resetSpeed();
     }
 
     public void startLineSegment() {
@@ -164,20 +140,13 @@ public class Printer implements Finishable {
         printModule.print(false);
     }
 
-    public void drawContinousLineSegment(double startX, double startY, double endX, double endY)
-            throws InterruptedException {
-        Engine printMotor = printModule.getEngines()[0];
-        Engine paperMotor = paperModule.getEngines()[0];
-
-    }
-
     public void drawLineSegment(double startX, double startY, double endX, double endY) {
         // x axis is the printMotor
         // y axis is the paperMotor
 
         Engine printMotor = printModule.getEngines()[0];
         Engine paperMotor = paperModule.getEngines()[0];
-        
+
         printMotor.setAcceleration(450);
         paperMotor.setAcceleration(450);
 
@@ -211,14 +180,14 @@ public class Printer implements Finishable {
             shortDistancePosition = endY;
         }
 
-        float engineLongDinstanceSpeed = engineLongDistance.getMaxSpeed() / 8;
+        float engineLongDinstanceSpeed = engineLongDistance.getMaxSpeed() / 3;
         double engineLongDinstanceTime = deviceLongDistance.convertMMToDegree(longDistance) / engineLongDinstanceSpeed;
 
         // calculate the speed of the engine with the short distance
         float engineShortDinstanceSpeed = (float) (deviceShortDistance.convertMMToDegree(shortDinstance)
                 / engineLongDinstanceTime);
 
-        printMotor.addSynchrozizedEngine(paperMotor);
+        printMotor.addSynchronizedEngine(paperMotor);
         printMotor.startSynchronization();
 
         ((Movable) deviceLongDistance).moveTo(longDistancePosition, engineLongDinstanceSpeed);
@@ -229,8 +198,23 @@ public class Printer implements Finishable {
         printMotor.waitComplete();
         paperMotor.waitComplete();
     }
-    
-    public void drawCircleVer1() {
-    	MovePilot movePilot = new MovePilot(null);
+
+    public double[] getPosition() {
+        return new double[] { printModule.getPosition(), paperModule.getPosition() };
+    }
+
+    public void setMaxSpeed() {
+        paperModule.setMaxSpeed();
+        printModule.setMaxSpeed();
+    }
+
+    public void resetSpeed() {
+        paperModule.resetSpeed();
+        printModule.resetSpeed();
+    }
+
+    public void resetAcceleration() {
+        paperModule.resetAcceleration();
+        printModule.resetAcceleration();
     }
 }

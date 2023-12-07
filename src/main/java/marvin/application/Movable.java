@@ -7,4 +7,8 @@ public interface Movable {
 	 * @param position takes the position as mm
 	 */
 	void moveTo(double position, double velocity, boolean returnImediate);
+    /**
+     * @param position takes the position as mm
+     */
+    void moveTo(double position, double velocity, double acceleration, boolean returnImediate);
 }
