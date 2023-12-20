@@ -8,8 +8,10 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.port.MotorPort;
 import marvin.application.geom.Rectangle;
 import marvin.le.BezierCurveEditor;
+import marvin.web.MarvinWebserver;
 
 public class Marvin {
+    public static Printer printer;
     
     private static double bezierSegmentLength = 0.004;
     
@@ -42,6 +44,16 @@ public class Marvin {
     }
 	
 	public static void main(String[] args) {
+	    //setup one printer
+	    printer = new Printer();
+	    
+	    //start webserver
+	    MarvinWebserver.main(args);
+	    
+	    //should only execute after the webserver was shutdown
+	    printer.finish();
+	    System.exit(0);
+	    
 	    //Acceleration and deceleration test
 	    /*EV3LargeRegulatedMotor paperEngine = new EV3LargeRegulatedMotor(MotorPort.B);
 	    
@@ -109,5 +121,7 @@ public class Marvin {
 	    drawBezier(points, bezierSegmentLength, printer);
 		
 		printer.finish();
+		
+		
 	}
 }

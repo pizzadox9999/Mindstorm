@@ -2,6 +2,8 @@ package marvin.le;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -9,6 +11,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
 
 public class LetterEditor {
@@ -26,7 +29,7 @@ public class LetterEditor {
         frame.setLayout(new BorderLayout());
         //compose the ui
         //JMenuBar
-        JMenuBar menuBar = new JMenuBar();
+        /*JMenuBar menuBar = new JMenuBar();
         frame.setJMenuBar(menuBar);
         
         JMenu fileMenu = new JMenu("File");
@@ -44,8 +47,26 @@ public class LetterEditor {
         //BezierCurveEditor
         BezierEditorComponent bezierEditorComponent = new BezierEditorComponent();
         frame.add(bezierEditorComponent, BorderLayout.CENTER);
-        
+        */
         frame.validate();
+        
+        final JPopupMenu popupMenu = new JPopupMenu("testlabel");
+        popupMenu.add(new JMenuItem("MenuItem1"));
+        
+        frame.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                if(e.getButton() == MouseEvent.BUTTON3) {
+                    popupMenu.show(frame, e.getX(), e.getY());
+                    
+                }
+                System.out.println("mouse clicked");
+                
+                System.out.println("popupMenu.isShowing(): " + popupMenu.isShowing());
+                System.out.println("popupMenu.isVisible(): " + popupMenu.isVisible());
+            }
+        });
     }
     
     public static void main(String[] args) {

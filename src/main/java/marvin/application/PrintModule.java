@@ -201,12 +201,15 @@ public class PrintModule implements Movable, Device, Finishable, Printhead {
             touchSensor.getTouchMode().fetchSample(oneSample, 0);
         }
         double endTime = System.currentTimeMillis();
-        printMotor.stop();        
+        printMotor.stop();
 
         double timeInMillis = endTime - startTime;
         double time = timeInMillis / 1000;
         
         double sizeInDegree = speed * time;
         size = convertDegreeToMM(sizeInDegree);
+        
+        //move to zero for top left coordinate system
+        printMotor.rotate( - Math.round(Math.round(sizeInDegree)));
     }
 }
