@@ -194,11 +194,7 @@ public class PaperModule implements Movable, Device, Finishable {
         if (isPaperEjected)
             return;
         moveTo(size);
-        paperMotor.forward();
-        try {
-            Thread.sleep(1500);
-        } catch (Exception e) {
-        }
+        move(40, false);
 
         isPaperEjected = true;
     }

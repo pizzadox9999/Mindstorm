@@ -1,22 +1,23 @@
 package marvin.application;
 
-import lejos.hardware.motor.EV3LargeRegulatedMotor;
-import lejos.robotics.RegulatedMotor;
-import lejos.robotics.RegulatedMotorListener;
-import lejos.robotics.navigation.MovePilot;
-import lejos.utility.Delay;
-
 public class Printer implements Finishable {
     private PaperModule paperModule;
     private PrintModule printModule;
-
-    private boolean isSynchronized = false;
+    
+    private boolean needConversion = false;
 
     public Printer() {
         paperModule = new PaperModule();
         printModule = new PrintModule();
+    }
+    
+    public void setup() {
         paperModule.setup();
         printModule.setup();
+        
+        //maybe little fix for position fuck up
+        paperModule.moveTo(0);
+        printModule.moveTo(0);
     }
 
     public void moveToPosition(double x, double y) {
@@ -26,6 +27,8 @@ public class Printer implements Finishable {
 
     @Override
     public void finish() {
+        resetAcceleration();
+        resetSpeed();
         paperModule.finish();
         printModule.finish();
     }
@@ -141,6 +144,19 @@ public class Printer implements Finishable {
     }
 
     public void drawLineSegment(double startX, double startY, double endX, double endY) {
+        System.out.println("drawLineSegment {startX: " + startX + " startY: " + startY + " endX: " + endX + " endY: " + endY + "}");
+        //convert from virtual coordinate system to printer coordinate system
+        if(needConversion) {
+            //values are from 0 to 1 multiply with printerSize to get the acutal positions
+            //on the hardware
+            double[] printerSize = getSize();
+            startX = printerSize[0] * startX;
+            startY = printerSize[1] * startY;
+            endX   = printerSize[0] * endX;
+            endY   = printerSize[1] * endY;
+            System.out.println("drawLineSegment converted {startX: " + startX + " startY: " + startY + " endX: " + endX + " endY: " + endY + "}");
+        }
+        
         // x axis is the printMotor
         // y axis is the paperMotor
 
@@ -198,7 +214,11 @@ public class Printer implements Finishable {
         printMotor.waitComplete();
         paperMotor.waitComplete();
     }
-
+    
+    public double[] getSize() {
+        return new double[] { printModule.getSize(), paperModule.getSize() };
+    }
+    
     public double[] getPosition() {
         return new double[] { printModule.getPosition(), paperModule.getPosition() };
     }
@@ -216,5 +236,13 @@ public class Printer implements Finishable {
     public void resetAcceleration() {
         paperModule.resetAcceleration();
         printModule.resetAcceleration();
+    }
+
+    public void needConversion(boolean needConversion) {
+        this.needConversion = needConversion;
+    }
+    
+    public boolean needConversion() {
+        return needConversion;
     }
 }
