@@ -154,6 +154,10 @@ public class Printer implements Finishable {
             startY = printerSize[1] * startY;
             endX   = printerSize[0] * endX;
             endY   = printerSize[1] * endY;
+            
+            //convert from left to right coordinate system
+            startX = getSize()[0] - startX;
+            endX = getSize()[0] - endX;
             System.out.println("drawLineSegment converted {startX: " + startX + " startY: " + startY + " endX: " + endX + " endY: " + endY + "}");
         }
         

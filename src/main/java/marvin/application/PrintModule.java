@@ -208,8 +208,5 @@ public class PrintModule implements Movable, Device, Finishable, Printhead {
         
         double sizeInDegree = speed * time;
         size = convertDegreeToMM(sizeInDegree);
-        
-        //move to zero for top left coordinate system
-        printMotor.rotate( - Math.round(Math.round(sizeInDegree)));
     }
 }

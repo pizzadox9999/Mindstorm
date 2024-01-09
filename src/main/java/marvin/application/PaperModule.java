@@ -128,7 +128,7 @@ public class PaperModule implements Movable, Device, Finishable {
         paperMotor.setSpeed(speed);
 
         // offset paper because off printerModule
-        paperMotor.rotate((int) Math.round(convertMMToDegree(65)), false);
+        paperMotor.rotate((int) Math.round(convertMMToDegree(80)), false);
 
         // paper is inserted
         long startTime = System.currentTimeMillis();

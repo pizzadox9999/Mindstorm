@@ -143,7 +143,7 @@ public class MarvinWebserver {
         addServletWithMapping(Print.class, "/api/print");
         addServletWithMapping(RetrieveWaitingPosition.class, "/api/waitingPosition");
         addServletWithMapping(Shutdown.class, "/api/shutdown");
-
+        
     }
 
     static boolean createDirectory(File f) {
