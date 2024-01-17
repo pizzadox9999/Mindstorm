@@ -29,7 +29,7 @@ public class LetterEditor {
         frame.setLayout(new BorderLayout());
         //compose the ui
         //JMenuBar
-        /*JMenuBar menuBar = new JMenuBar();
+        JMenuBar menuBar = new JMenuBar();
         frame.setJMenuBar(menuBar);
         
         JMenu fileMenu = new JMenu("File");
@@ -47,7 +47,7 @@ public class LetterEditor {
         //BezierCurveEditor
         BezierEditorComponent bezierEditorComponent = new BezierEditorComponent();
         frame.add(bezierEditorComponent, BorderLayout.CENTER);
-        */
+        
         frame.validate();
         
         final JPopupMenu popupMenu = new JPopupMenu("testlabel");
