@@ -1,5 +1,7 @@
 package marvin.application;
 
+import marvin.application.engine.Engine;
+
 public class Printer implements Finishable {
     private PaperModule paperModule;
     private PrintModule printModule;

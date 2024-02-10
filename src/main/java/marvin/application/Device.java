@@ -1,5 +1,7 @@
 package marvin.application;
 
+import marvin.application.engine.Engine;
+
 public interface Device {
     public void setup();
     public double getSize();

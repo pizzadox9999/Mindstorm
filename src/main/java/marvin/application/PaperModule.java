@@ -3,6 +3,8 @@ package marvin.application;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3ColorSensor;
+import marvin.application.engine.Engine;
+import marvin.application.engine.LargeEngine;
 
 public class PaperModule implements Movable, Device, Finishable {
     private LargeEngine paperMotor;

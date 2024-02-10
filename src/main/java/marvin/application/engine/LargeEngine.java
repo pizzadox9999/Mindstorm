@@ -1,4 +1,4 @@
-package marvin.application;
+package marvin.application.engine;
 
 import lejos.hardware.port.Port;
 import lejos.hardware.port.TachoMotorPort;

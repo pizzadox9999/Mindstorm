@@ -3,6 +3,9 @@ package marvin.application;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3TouchSensor;
+import marvin.application.engine.Engine;
+import marvin.application.engine.LargeEngine;
+import marvin.application.engine.MediumEngine;
 
 public class PrintModule implements Movable, Device, Finishable, Printhead {
     private LargeEngine printMotor;
